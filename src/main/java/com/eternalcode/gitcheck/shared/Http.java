@@ -17,9 +17,17 @@ import java.util.stream.Collectors;
 public class Http {
 
     GitRepository gitRepository;
+    String apiURL;
+    String userAgent;
 
-    private JSONObject requestLastRelease(GitRepository repository, String apiURL, String userAgent) {
-        String getUrl = String.format(apiURL, repository.getFullName());
+    public Http(GitRepository gitRepository, String apiURL, String userAgent) {
+        this.gitRepository = gitRepository;
+        this.apiURL = apiURL;
+        this.userAgent = userAgent;
+    }
+
+    public JSONObject requestLastRelease() {
+        String getUrl = String.format(apiURL, gitRepository.getFullName());
 
         try {
             URL url = new URL(getUrl);
@@ -35,7 +43,7 @@ public class Http {
             httpURLConnection.connect();
 
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-                throw new GitException("The release of the repository " + repository.getFullName() + " was not found");
+                throw new GitException("The release of the repository " + gitRepository.getFullName() + " was not found");
             }
 
             if (httpURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
